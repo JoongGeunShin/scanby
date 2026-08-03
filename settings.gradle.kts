@@ -24,9 +24,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "scanby"
 include(":app")
-
-include(":core-designsystem")
-project(":core-designsystem").projectDir = file("core/designsystem")
-
-include(":feature-onboarding")
-project(":feature-onboarding").projectDir = file("feature/onboarding")
