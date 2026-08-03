@@ -1,0 +1,8 @@
+com.example.scanby.core.designsystem.core-designsystem-pngs-0 E:\projects\scanby\core\designsystem\build\generated\res\pngs\debug
+com.example.scanby.core.designsystem.core-designsystem-updated_navigation_xml-1 E:\projects\scanby\core\designsystem\build\generated\updated_navigation_xml\debug
+com.example.scanby.core.designsystem.core-designsystem-mergeDebugResources-2 E:\projects\scanby\core\designsystem\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+com.example.scanby.core.designsystem.core-designsystem-mergeDebugResources-3 E:\projects\scanby\core\designsystem\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+com.example.scanby.core.designsystem.core-designsystem-debug-4 E:\projects\scanby\core\designsystem\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.scanby.core.designsystem.core-designsystem-debug-5 E:\projects\scanby\core\designsystem\build\intermediates\packaged_res\debug\packageDebugResources
+com.example.scanby.core.designsystem.core-designsystem-debug-6 E:\projects\scanby\core\designsystem\src\debug\res
+com.example.scanby.core.designsystem.core-designsystem-main-7 E:\projects\scanby\core\designsystem\src\main\res
