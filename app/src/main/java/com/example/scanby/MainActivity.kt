@@ -4,9 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +22,7 @@ import com.example.scanby.feature.onboarding.OnboardingScreen
 import com.example.scanby.feature.onboarding.OnboardingViewModel
 import com.example.scanby.feature.splash.SplashScreen
 import com.example.scanby.feature.splash.SplashViewModel
+import com.example.scanby.navigation.HomeRoute
 import com.example.scanby.navigation.OnboardingRoute
 import com.example.scanby.navigation.SplashRoute
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +55,9 @@ private fun ScanbyApp() {
             SplashScreen(
                 onFinished = {
                     if (onboardingCompleted == true) {
-                        // TODO: navigate to feature.login / feature.home once they exist
+                        navController.navigate(HomeRoute.route) {
+                            popUpTo(SplashRoute.route) { inclusive = true }
+                        }
                     } else {
                         navController.navigate(OnboardingRoute.route) {
                             popUpTo(SplashRoute.route) { inclusive = true }
@@ -63,9 +71,16 @@ private fun ScanbyApp() {
             OnboardingScreen(
                 onFinished = {
                     onboardingViewModel.completeOnboarding()
-                    // TODO: navigate to feature.login / feature.home once they exist
+                    navController.navigate(HomeRoute.route) {
+                        popUpTo(OnboardingRoute.route) { inclusive = true }
+                    }
                 },
             )
+        }
+        composable(HomeRoute.route) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Home (준비 중)")
+            }
         }
     }
 }
