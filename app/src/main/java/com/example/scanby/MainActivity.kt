@@ -4,12 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scanby.core.designsystem.theme.ScanbyTheme
 import com.example.scanby.feature.onboarding.OnboardingScreen
+import com.example.scanby.feature.onboarding.OnboardingViewModel
+import com.example.scanby.feature.splash.SplashScreen
+import com.example.scanby.feature.splash.SplashViewModel
 import com.example.scanby.navigation.OnboardingRoute
+import com.example.scanby.navigation.SplashRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,17 +28,44 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ScanbyTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = OnboardingRoute.route) {
-                    composable(OnboardingRoute.route) {
-                        OnboardingScreen(
-                            onFinished = {
-                                // TODO: navigate to feature.login / feature.home once they exist
-                            },
-                        )
-                    }
-                }
+                ScanbyApp()
             }
+        }
+    }
+}
+
+/**
+ * Splash는 항상 먼저 보여주는 브랜드 화면. 자동으로 끝나면(SplashScreen 내부 타이머)
+ * SplashViewModel이 읽어둔 온보딩 완료 여부를 보고 다음 화면을 정한다.
+ */
+@Composable
+private fun ScanbyApp() {
+    val navController: NavHostController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = SplashRoute.route) {
+        composable(SplashRoute.route) {
+            val splashViewModel: SplashViewModel = hiltViewModel()
+            val onboardingCompleted by splashViewModel.onboardingCompleted.collectAsState()
+            SplashScreen(
+                onFinished = {
+                    if (onboardingCompleted == true) {
+                        // TODO: navigate to feature.login / feature.home once they exist
+                    } else {
+                        navController.navigate(OnboardingRoute.route) {
+                            popUpTo(SplashRoute.route) { inclusive = true }
+                        }
+                    }
+                },
+            )
+        }
+        composable(OnboardingRoute.route) {
+            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+            OnboardingScreen(
+                onFinished = {
+                    onboardingViewModel.completeOnboarding()
+                    // TODO: navigate to feature.login / feature.home once they exist
+                },
+            )
         }
     }
 }
