@@ -4,20 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scanby.core.designsystem.theme.ScanbyTheme
+import com.example.scanby.feature.home.HomeScreen
 import com.example.scanby.feature.onboarding.OnboardingScreen
 import com.example.scanby.feature.onboarding.OnboardingViewModel
 import com.example.scanby.feature.splash.SplashScreen
@@ -78,9 +74,7 @@ private fun ScanbyApp() {
             )
         }
         composable(HomeRoute.route) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Home (준비 중)")
-            }
+            HomeScreen()
         }
     }
 }
