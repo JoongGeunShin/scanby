@@ -1,6 +1,9 @@
 package com.example.scanby.feature.home
 
-import android.R.attr.onClick
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,38 +13,78 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import com.example.scanby.core.camera.CameraPreview
 import com.example.scanby.core.designsystem.theme.ScanbyColor
 import com.example.scanby.core.designsystem.theme.ScanbyTheme
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier
-){
+) {
+    val context = LocalContext.current
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        hasCameraPermission = granted
+    }
+
+    LaunchedEffect(Unit) {
+        if (!hasCameraPermission) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+//            .navigationBarsPadding() 테스트후 적용
     ) {
         Box(
             modifier = Modifier
                 .weight(2f)
                 .fillMaxWidth()
-                .background(Color.Gray)
-        )
+                .background(Color.Gray),
+            contentAlignment = Alignment.Center
+        ) {
+            if (hasCameraPermission) {
+                CameraPreview(modifier = Modifier.fillMaxSize())
+            } else {
+                Text(text = "문서를 스캔하려면 카메라 권한이 필요합니다", color = Color.White)
+            }
+        }
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -50,7 +93,6 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                modifier = Modifier.size(14.dp),
                 onClick = {
                     // TODO(Stage 8): 라이브러리(저장된 스캔 목록) 화면으로 이동
                 }
@@ -62,11 +104,12 @@ fun HomeScreen(
                     .size(72.dp)
                     .border(width = 4.dp, color = ScanbyColor.Accent, shape = CircleShape)
                     .padding(6.dp)
-                    .clip(CircleShape),
-//                    .clickable(), // 터치 영역 및 원형 Ripple 효과
+                    .clip(CircleShape)
+                    .clickable {
+                        // TODO(Stage 3): ImageCapture로 촬영 파이프라인 연결
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                // 2. 안쪽 채워진 원
                 Box(
                     modifier = Modifier
                         .size(54.dp)
@@ -74,7 +117,6 @@ fun HomeScreen(
                 )
             }
             IconButton(
-                modifier = Modifier.size(14.dp),
                 onClick = {
                     // TODO(Stage 8): ActivityResultContracts.PickVisualMedia로 갤러리에서 사진 선택
                 }
@@ -87,7 +129,7 @@ fun HomeScreen(
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 720)
 @Composable
-private fun HomeScreenPreview(){
+private fun HomeScreenPreview() {
     ScanbyTheme {
         HomeScreen()
     }
