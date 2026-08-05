@@ -1,9 +1,13 @@
 package com.example.scanby.feature.home
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,6 +44,9 @@ import androidx.core.content.ContextCompat
 import com.example.scanby.core.camera.CameraPreview
 import com.example.scanby.core.designsystem.theme.ScanbyColor
 import com.example.scanby.core.designsystem.theme.ScanbyTheme
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -54,6 +61,8 @@ fun HomeScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
+
+    var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -80,7 +89,10 @@ fun HomeScreen(
             contentAlignment = Alignment.Center
         ) {
             if (hasCameraPermission) {
-                CameraPreview(modifier = Modifier.fillMaxSize())
+                CameraPreview(
+                    modifier = Modifier.fillMaxSize(),
+                    onImageCaptureReady = { imageCapture = it }
+                )
             } else {
                 Text(text = "문서를 스캔하려면 카메라 권한이 필요합니다", color = Color.White)
             }
@@ -106,7 +118,7 @@ fun HomeScreen(
                     .padding(6.dp)
                     .clip(CircleShape)
                     .clickable {
-                        // TODO(Stage 3): ImageCapture로 촬영 파이프라인 연결
+                        imageCapture?.let { capture -> takePhoto(context, capture) }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -125,6 +137,27 @@ fun HomeScreen(
             }
         }
     }
+}
+
+private fun takePhoto(context: Context, imageCapture: ImageCapture) {
+    val fileName = "scanby_" + SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA)
+        .format(System.currentTimeMillis()) + ".jpg"
+    val photoFile = File(context.filesDir, fileName)
+    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+    imageCapture.takePicture(
+        outputOptions,
+        ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                Toast.makeText(context, "저장됨: ${photoFile.name}", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                Toast.makeText(context, "촬영 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 720)
