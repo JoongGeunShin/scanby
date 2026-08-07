@@ -13,10 +13,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Paid
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +51,7 @@ import com.example.scanby.core.permission.rememberPermissionState
 import com.example.scanby.core.vision.CornerSmoother
 import com.example.scanby.core.vision.DocQuadDetector
 import com.example.scanby.feature.home.components.DocumentCornerOverlay
+import com.example.scanby.feature.home.components.SettingsMenuButton
 import com.example.scanby.feature.home.utils.takePhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -217,9 +217,10 @@ private fun HomeScreenContent(
         }
         Row(
             modifier = Modifier
-                .weight(0.2f)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .fillMaxWidth()
+                .height(56.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ){
             IconButton(
                 onClick = {
@@ -251,14 +252,7 @@ private fun HomeScreenContent(
             ) {
                 Icon(imageVector = Icons.Default.Paid, contentDescription = "premiumMode")
             }
-            IconButton(
-                onClick = {
-
-                }
-            ) {
-                // 현재 FlashOff로만 단일 세팅 → 상태에 따라 FlashON, FlashLightON 3단계로 변경
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "SettingsMode")
-            }
+            SettingsMenuButton()
         }
         Row(
             modifier = Modifier
