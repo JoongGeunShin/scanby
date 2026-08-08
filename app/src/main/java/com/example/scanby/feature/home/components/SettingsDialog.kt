@@ -89,6 +89,7 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
             AnimatedVisibility(
                 visibleState = dialogVisibleState,
                 enter = fadeIn(),
+//                enter = expandIn { fullSize -> IntArray(2) { fullSize / 2 } },
                 exit = fadeOut(),
             ) {
                 Box(
@@ -106,6 +107,7 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
                     SettingsDialog(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
+                            .padding(horizontal = 10.dp, vertical = 16.dp)
                             .statusBarsPadding()
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -151,7 +153,7 @@ fun SettingsDialog(
         modifier = modifier.fillMaxWidth(),
         color = ScanbyColor.Navy,
         contentColor = Color.White,
-        shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
+        shape = RoundedCornerShape(24.dp)
     ) {
         Column(modifier = Modifier.padding(bottom = 12.dp)) {
             Row(
@@ -171,28 +173,27 @@ fun SettingsDialog(
                     onClick = onOpenAdvancedSettings
                 )
             }
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                thickness = 1.dp,
-                color = Color.White.copy(alpha = 0.15f)
-            )
+            divider()
             SettingsNavigationRow(
                 title = "PC로 전송",
                 subtitle = "스캔 파일을 PC로 바로 저장하기",
                 onClick = onSendToPcClick
             )
+            divider()
             SettingsSwitchRow(
                 title = "색상 보정",
                 subtitle = "색상 보정 기능을 끄면 스캔한 페이지의 본래색을 유지합니다.",
                 checked = isColorCorrectionOn,
                 onCheckedChange = onColorCorrectionChange
             )
+            divider()
             SettingsSwitchRow(
                 title = "손가락 지우기",
                 subtitle = "스캔 결과물에서 손가락을 지웁니다.",
                 checked = isEraseFingerOn,
                 onCheckedChange = onEraseFingerChange
             )
+            divider()
             SettingsSwitchRow(
                 title = "더 펴기",
                 subtitle = "스캔 결과물이 더 반듯해지도록 보정합니다.",
@@ -216,6 +217,17 @@ private fun SettingsIconLabel(
         }
         Text(text = label, fontSize = 12.sp)
     }
+}
+
+@Composable
+private fun divider(
+
+){
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 22.dp),
+        thickness = 1.dp,
+        color = Color.White.copy(alpha = 0.15f)
+    )
 }
 
 @Composable
