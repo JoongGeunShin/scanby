@@ -3,6 +3,9 @@ package com.example.scanby.feature.home
 import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.PointF
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,6 +55,8 @@ import com.example.scanby.core.vision.CornerSmoother
 import com.example.scanby.core.vision.DocQuadDetector
 import com.example.scanby.feature.home.components.DocumentCornerOverlay
 import com.example.scanby.feature.home.components.SettingsMenuButton
+import com.example.scanby.feature.home.utils.loadBitmapFromUri
+import com.example.scanby.feature.home.utils.processPickedImage
 import com.example.scanby.feature.home.utils.takePhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,6 +75,7 @@ private const val MAX_MISS_STREAK = 5
 
 @Composable
 fun HomeScreen(
+    onSendToPcClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -98,6 +104,21 @@ fun HomeScreen(
 
     DisposableEffect(Unit) {
         onDispose { docQuadDetector?.close() }
+    }
+    val pickImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) {
+        uri ->
+        if(uri != null){
+            coroutineScope.launch {
+                val picked = withContext(Dispatchers.IO){
+                    loadBitmapFromUri(context, uri)
+                }
+                withContext(Dispatchers.Default){
+                    processPickedImage(context, picked, docQuadDetector)
+                }
+            }
+        }
     }
 
     HomeScreenContent(
@@ -151,7 +172,13 @@ fun HomeScreen(
             imageCapture?.let { capture ->
                 takePhoto(context, capture, detectedCorners, analyzedFrameSize)
             }
-        }
+        },
+        onGalleryClick = {
+            pickImageLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        },
+        onSendToPcClick = onSendToPcClick
     )
 }
 
@@ -172,6 +199,8 @@ private fun HomeScreenContent(
     onImageCaptureReady: (ImageCapture) -> Unit,
     onFrameAnalyzed: (Bitmap) -> Unit,
     onCaptureClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onSendToPcClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -252,7 +281,7 @@ private fun HomeScreenContent(
             ) {
                 Icon(imageVector = Icons.Default.Paid, contentDescription = "premiumMode")
             }
-            SettingsMenuButton()
+            SettingsMenuButton(onSendToPcClick = onSendToPcClick)
         }
         Row(
             modifier = Modifier
@@ -283,11 +312,7 @@ private fun HomeScreenContent(
                         .background(color = ScanbyColor.AccentGradientEnd, shape = CircleShape)
                 )
             }
-            IconButton(
-                onClick = {
-                    // TODO(Stage 8): ActivityResultContracts.PickVisualMedia로 갤러리에서 사진 선택
-                }
-            ) {
+            IconButton(onClick = onGalleryClick) {
                 Icon(imageVector = Icons.Default.Image, contentDescription = "갤러리")
             }
         }
@@ -306,7 +331,9 @@ private fun HomeScreenPreview() {
             analysisIntervalMs = ANALYSIS_INTERVAL_MS,
             onImageCaptureReady = {},
             onFrameAnalyzed = {},
-            onCaptureClick = {}
+            onCaptureClick = {},
+            onGalleryClick = {},
+            onSendToPcClick = {}
         )
     }
 }
