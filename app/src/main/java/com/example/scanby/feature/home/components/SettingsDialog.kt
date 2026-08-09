@@ -56,7 +56,10 @@ import com.example.scanby.core.designsystem.theme.ScanbyTheme
  * 이 컴포저블은 그 값을 파라미터로 받도록 바꾸면 된다.
  */
 @Composable
-fun SettingsMenuButton(modifier: Modifier = Modifier) {
+fun SettingsMenuButton(
+    onSendToPcClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var expanded by remember { mutableStateOf(false) }
     var isShutterSoundOn by remember { mutableStateOf(true) }
     var isColorCorrectionOn by remember { mutableStateOf(true) }
@@ -67,10 +70,6 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
         Icon(imageVector = Icons.Default.Settings, contentDescription = "설정")
     }
 
-    // Dialog는 `if (expanded)`로 껐다 켰다 하면 사라지는 순간 즉시 컴포지션에서 빠져서
-    // 퇴장 애니메이션을 걸 방법이 없다. MutableTransitionState로 "지금 보이는 상태(currentState)"와
-    // "목표 상태(targetState)"를 따로 들고 있으면, 둘 중 하나라도 true인 동안(= 아직 퇴장
-    // 애니메이션이 끝나기 전까지) Dialog를 계속 마운트해둘 수 있다.
     val dialogVisibleState = remember { MutableTransitionState(false) }
     dialogVisibleState.targetState = expanded
 
@@ -79,10 +78,6 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
             onDismissRequest = { expanded = false },
             properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            // Dialog가 만드는 시스템 창에는 테마의 기본 다이얼로그 애니메이션(여기선
-            // 아래→위 슬라이드로 보임)이 기본으로 걸려 있다. 페이드만 남기려면 창
-            // 애니메이션 자체를 꺼야 한다 — DialogProperties엔 이 옵션이 없어서
-            // DialogWindowProvider로 실제 Window에 접근해서 직접 끈다.
             val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
             SideEffect { dialogWindow?.setWindowAnimations(0) }
 
@@ -96,8 +91,6 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.5f))
-                        // 반투명 배경(scrim) 아무 곳이나 누르면 닫힘. indication = null로
-                        // 화면 전체에 물결 효과가 번지는 걸 막는다.
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -120,7 +113,8 @@ fun SettingsMenuButton(modifier: Modifier = Modifier) {
                             // TODO: 전체 설정 화면으로 이동
                         },
                         onSendToPcClick = {
-                            // TODO: PC 전송 플로우 연결
+                            expanded = false
+                            onSendToPcClick()
                         },
                         isColorCorrectionOn = isColorCorrectionOn,
                         onColorCorrectionChange = { isColorCorrectionOn = it },
