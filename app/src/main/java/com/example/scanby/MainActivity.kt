@@ -16,10 +16,12 @@ import com.example.scanby.core.designsystem.theme.ScanbyTheme
 import com.example.scanby.feature.home.HomeScreen
 import com.example.scanby.feature.onboarding.OnboardingScreen
 import com.example.scanby.feature.onboarding.OnboardingViewModel
+import com.example.scanby.feature.sendtopc.SendToPcScreen
 import com.example.scanby.feature.splash.SplashScreen
 import com.example.scanby.feature.splash.SplashViewModel
 import com.example.scanby.navigation.HomeRoute
 import com.example.scanby.navigation.OnboardingRoute
+import com.example.scanby.navigation.SendToPcRoute
 import com.example.scanby.navigation.SplashRoute
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -74,7 +76,14 @@ private fun ScanbyApp() {
             )
         }
         composable(HomeRoute.route) {
-            HomeScreen()
+            HomeScreen(
+                onSendToPcClick = { navController.navigate(SendToPcRoute.route) },
+            )
+        }
+        composable(SendToPcRoute.route) {
+            SendToPcScreen(
+                onBack = { navController.popBackStack() },
+            )
         }
     }
 }
