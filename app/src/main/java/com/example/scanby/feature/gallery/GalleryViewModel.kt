@@ -21,7 +21,6 @@ data class GalleryUiState(
 class GalleryViewModel @Inject constructor(
     private val galleryRepository: GalleryRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(GalleryUiState())
     val uiState: StateFlow<GalleryUiState> = _uiState
 
@@ -31,7 +30,6 @@ class GalleryViewModel @Inject constructor(
             _uiState.update { it.copy(images = images) }
         }
     }
-
     fun onImageTapped(id: Long) {
         _uiState.update { state ->
             if (state.isMultiSelectMode) {
@@ -46,10 +44,10 @@ class GalleryViewModel @Inject constructor(
             }
         }
     }
-
-    fun onImageLongPressed(id: Long) {
+    fun setImageSelected(id: Long, selected: Boolean) {
         _uiState.update { state ->
-            state.copy(isMultiSelectMode = true, selectedIds = state.selectedIds + id)
+            val selectedIds = if (selected) state.selectedIds + id else state.selectedIds - id
+            state.copy(isMultiSelectMode = true, selectedIds = selectedIds)
         }
     }
 }
