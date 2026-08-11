@@ -1,6 +1,7 @@
 package com.example.scanby.core.designsystem.theme
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ fun ScanbyTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = ScanbyColorScheme,
         typography = ScanbyMaterialTypography,
-        content = content,
-    )
+    ) {
+        Surface(color = MaterialTheme.colorScheme.background, content = content)
+    }
 }
