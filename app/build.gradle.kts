@@ -65,6 +65,9 @@ dependencies {
     implementation(libs.nanohttpd)
     implementation(libs.zxing.core)
     implementation(libs.coil.compose)
+    // OCR
+    implementation(libs.androidx.exifinterface)
+    implementation(libs.mlkit.text.recognition.korean)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
