@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scanby.core.designsystem.theme.ScanbyTheme
 import com.example.scanby.feature.gallery.GalleryScreen
+import com.example.scanby.feature.gallery.ImageDetailScreen
 import com.example.scanby.feature.home.HomeScreen
 import com.example.scanby.feature.onboarding.OnboardingScreen
 import com.example.scanby.feature.onboarding.OnboardingViewModel
@@ -24,6 +25,7 @@ import com.example.scanby.feature.splash.SplashScreen
 import com.example.scanby.feature.splash.SplashViewModel
 import com.example.scanby.navigation.GalleryRoute
 import com.example.scanby.navigation.HomeRoute
+import com.example.scanby.navigation.ImageDetailRoute
 import com.example.scanby.navigation.OnboardingRoute
 import com.example.scanby.navigation.SendToPcRoute
 import com.example.scanby.navigation.SplashRoute
@@ -100,7 +102,17 @@ private fun ScanbyApp() {
         composable(GalleryRoute.route) {
             GalleryScreen(
                 onBack = { navController.popBackStack() },
+                onImageOpen = { uri -> navController.navigate(ImageDetailRoute.createRoute(uri)) },
             )
+        }
+        composable(ImageDetailRoute.route) { backStackEntry ->
+            val uri = ImageDetailRoute.uriFrom(backStackEntry)
+            if (uri != null) {
+                ImageDetailScreen(
+                    uri = uri,
+                    onBack = { navController.popBackStack() },
+                )
+            }
         }
     }
 }
